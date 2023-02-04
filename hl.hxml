@@ -1,0 +1,5 @@
+--class-path src
+common.hxml
+-L hldx
+--hl bin/hl/main.hl
+--main Main

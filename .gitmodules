@@ -1,0 +1,18 @@
+[submodule "lib/heaps"]
+	path = lib/heaps
+	url = git@github.com:HeapsIO/heaps.git
+[submodule "lib/hashlink"]
+	path = lib/hashlink
+	url = git@github.com:HaxeFoundation/hashlink.git
+[submodule "lib/heat_aabb"]
+	path = lib/heat_aabb
+	url = git@github.com:mrrogge/heat_aabb.git
+[submodule "lib/heat_ecs"]
+	path = lib/heat_ecs
+	url = git@github.com:mrrogge/heat_ecs.git
+[submodule "lib/heat_core"]
+	path = lib/heat_core
+	url = git@github.com:mrrogge/heat_core.git
+[submodule "lib/heat_event"]
+	path = lib/heat_event
+	url = git@github.com:mrrogge/heat_event.git
