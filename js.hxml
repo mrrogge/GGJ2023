@@ -1,5 +1,4 @@
 --class-path src
 common.hxml
--L hldx
---hl bin/hl/main.hl
+--js bin/js/main.js
 --main Main

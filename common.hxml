@@ -3,3 +3,5 @@
 -L heat_core
 -L heat_ecs
 -L heat_event
+-L ldtk-haxe-api
+-L deepnightLibs
