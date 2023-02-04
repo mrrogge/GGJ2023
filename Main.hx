@@ -1,8 +1,24 @@
+import heat.ecs.ComMap;
+using heat.AllCore;
 class Main extends hxd.App {
-    public var ldtkProject:LdtkProject;
+    public static var ldtkProject:LdtkProject;
+    public static var tiles:Tiles;
 
-    public static inline final VIEW_WIDTH = 960;
-    public static inline final VIEW_HEIGHT = 450;
+    public static final velocities = new ComMap<MVectorFloat2>();
+    public static final prevVels = new ComMap<MVectorFloat2>();
+    public static final bitmaps = new ComMap<h2d.Bitmap>();
+
+    public static var ent1Id:Int;
+    public static var ent2Id:Int;
+    public static var ent2Active = false;
+
+    static var nextId = 0;
+
+    public static inline final TILE_SIZE = 16;
+    public static inline final CAM_PX_WIDTH = TILE_SIZE * 20;
+    public static inline final CAM_PX_HEIGHT = TILE_SIZE * 16;
+
+    var moveSys:MoveSys;
 
     public static function main() {
         new Main();
@@ -10,19 +26,37 @@ class Main extends hxd.App {
 
     override function init() {
         super.init();
-        loadLevel();
+        initWindow();
+        initTiles();
+        initScene();
+        initSystems();
+        loadLevels();
+    }
+
+    function initWindow() {
+        hxd.Window.getInstance().resize(CAM_PX_WIDTH*3, CAM_PX_HEIGHT*3);
+        hxd.Window.getInstance().addEventTarget(keyEventHandler);
+    }
+
+    function initTiles() {
+        tiles = new Tiles();
     }
 
     function initScene() {
         //sets the scene to a fixed size with space around it to fill the window. Hardcoding this for now, should eventually configurable via game UI
-       s2d.scaleMode = LetterBox(VIEW_WIDTH, VIEW_HEIGHT, true, Center, Center);
+       s2d.scaleMode = LetterBox(CAM_PX_WIDTH, CAM_PX_HEIGHT, true, Center, Center);
+    }
+
+    function initSystems() {
+        moveSys = new MoveSys();
     }
 
     override function update(dt:Float) {
         super.update(dt);
+        moveSys.update(dt);
     }
 
-    function loadLevel() {
+    function loadLevels() {
         ldtkProject = new LdtkProject();
         var level0 = ldtkProject.all_levels.Level_0.l_Floor.render();
         level0.setPosition(ldtkProject.all_levels.Level_0.worldX, ldtkProject.all_levels.Level_0.worldY);
@@ -42,6 +76,30 @@ class Main extends hxd.App {
         var level5 = ldtkProject.all_levels.Level_5.l_Floor.render();
         level5.setPosition(ldtkProject.all_levels.Level_5.worldX, ldtkProject.all_levels.Level_5.worldY);
         s2d.addChild(level5);
+
+        loadEnts();
+    }
+
+    function loadEnts() {
+        ent1Id = getId();
+        var ent1 = new Ent();
+        var ldtkEnt1 = ldtkProject.all_levels.Level_0.l_Entities.all_Ent[0];
+        ent1.setPosition(ldtkEnt1.pixelX, ldtkEnt1.pixelY);
+        s2d.addChild(ent1);
+        bitmaps[ent1Id] = ent1;
+        velocities[ent1Id] = new MVectorFloat2();
+        prevVels[ent1Id] = new MVectorFloat2();
+        
+
+        ent2Id = getId();
+        var ent2 = new Ent();
+        ent2.toTreeForm();
+        var ldtkEnt2 = ldtkProject.all_levels.Level_0.l_Entities.all_Tree[0];
+        ent2.setPosition(ldtkEnt2.pixelX, ldtkEnt2.pixelY);
+        s2d.addChild(ent2);
+        velocities[ent2Id] = new MVectorFloat2();
+        prevVels[ent2Id] = new MVectorFloat2();
+        bitmaps[ent2Id] = ent2;
     }
 
     override function loadAssets(onLoaded:() -> Void) {
@@ -54,4 +112,63 @@ class Main extends hxd.App {
         super.loadAssets(onLoaded);
     }
 
+    function keyEventHandler(event:hxd.Event) {
+        switch event.kind {
+            case EKeyDown: {
+                if (!hxd.Key.ALLOW_KEY_REPEAT && hxd.Key.isDown(event.keyCode)) return;
+                makeActiveEntWalk(event.keyCode);
+            }
+            case EKeyUp: {
+                stopActiveEntWalking(event.keyCode);
+            }
+            default: {}
+        }
+    }
+
+    function makeActiveEntWalk(keyCode:Int) {
+        var id = ent2Active ? ent2Id : ent1Id;
+        var vel = velocities[id];
+        final SPEED = 100;
+        switch keyCode {
+            case hxd.Key.A: {
+                vel.x = -SPEED;
+            }
+            case hxd.Key.W: {
+                vel.y = -SPEED;
+            }
+            case hxd.Key.D: {
+                vel.x = SPEED;
+            }
+
+            case hxd.Key.S: {
+                vel.y = SPEED;
+            }
+            default: {}
+        }
+    }
+
+    function stopActiveEntWalking(keyCode:Int) {
+        var id = ent2Active ? ent2Id : ent1Id;
+        var vel = velocities[id];
+        switch keyCode {
+            case hxd.Key.A: {
+                vel.x = 0;
+            }
+            case hxd.Key.W: {
+                vel.y = 0;
+            }
+            case hxd.Key.D: {
+                vel.x = 0;
+            }
+
+            case hxd.Key.S: {
+                vel.y = 0;
+            }
+            default: {}
+        }
+    }
+
+    public static function getId():Int {
+        return nextId++;
+    }
 }

@@ -11,7 +11,7 @@
 	"iid": "d83df070-9f30-11ed-a709-1f292e649e22",
 	"jsonVersion": "1.2.5",
 	"appBuildId": 464870,
-	"nextUid": 27,
+	"nextUid": 28,
 	"identifierStyle": "Capitalize",
 	"toc": [],
 	"worldLayout": "Free",
@@ -96,7 +96,7 @@
 		}
 	], "entities": [
 		{
-			"identifier": "Ent1",
+			"identifier": "Ent",
 			"uid": 6,
 			"tags": [],
 			"exportToToc": false,
@@ -120,18 +120,18 @@
 			"maxCount": 0,
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
-			"pivotX": 0.5,
-			"pivotY": 0.5,
+			"pivotX": 0,
+			"pivotY": 0,
 			"fieldDefs": []
 		},
 		{
-			"identifier": "Ent2",
+			"identifier": "Tree",
 			"uid": 8,
 			"tags": [],
 			"exportToToc": false,
 			"doc": "Bark Walberg",
-			"width": 16,
-			"height": 32,
+			"width": 64,
+			"height": 64,
 			"resizableX": false,
 			"resizableY": false,
 			"keepAspectRatio": false,
@@ -149,8 +149,8 @@
 			"maxCount": 0,
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
-			"pivotX": 0.5,
-			"pivotY": 0.5,
+			"pivotX": 0,
+			"pivotY": 0,
 			"fieldDefs": []
 		},
 		{
@@ -540,20 +540,6 @@
 					"gridTiles": [],
 					"entityInstances": [
 						{
-							"__identifier": "Ent1",
-							"__grid": [4,4],
-							"__pivot": [0.5,0.5],
-							"__tags": [],
-							"__tile": { "tilesetUid": 7, "x": 16, "y": 288, "w": 16, "h": 16 },
-							"__smartColor": "#193C3E",
-							"iid": "371acd10-9f30-11ed-a709-cd6d058924be",
-							"width": 16,
-							"height": 32,
-							"defUid": 6,
-							"px": [64,64],
-							"fieldInstances": []
-						},
-						{
 							"__identifier": "RedBtn",
 							"__grid": [10,3],
 							"__pivot": [0,0],
@@ -610,17 +596,31 @@
 							"fieldInstances": []
 						},
 						{
-							"__identifier": "Ent2",
-							"__grid": [3,11],
-							"__pivot": [0.5,0.5],
+							"__identifier": "Tree",
+							"__grid": [2,10],
+							"__pivot": [0,0],
 							"__tags": [],
 							"__tile": { "tilesetUid": 7, "x": 48, "y": 288, "w": 16, "h": 16 },
 							"__smartColor": "#193C3E",
-							"iid": "96c24fe0-9f30-11ed-a709-a7990571f1ba",
+							"iid": "82436b50-9f30-11ed-b3df-0dd196df9645",
+							"width": 64,
+							"height": 64,
+							"defUid": 8,
+							"px": [32,160],
+							"fieldInstances": []
+						},
+						{
+							"__identifier": "Ent",
+							"__grid": [3,3],
+							"__pivot": [0,0],
+							"__tags": [],
+							"__tile": { "tilesetUid": 7, "x": 16, "y": 288, "w": 16, "h": 16 },
+							"__smartColor": "#193C3E",
+							"iid": "a3f2c570-9f30-11ed-b3df-07969b9b4341",
 							"width": 16,
 							"height": 32,
-							"defUid": 8,
-							"px": [56,184],
+							"defUid": 6,
+							"px": [48,48],
 							"fieldInstances": []
 						}
 					]

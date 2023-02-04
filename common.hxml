@@ -5,3 +5,4 @@
 -L heat_event
 -L ldtk-haxe-api
 -L deepnightLibs
+-L tink_core
