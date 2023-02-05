@@ -3,6 +3,7 @@
 -L heat_core
 -L heat_ecs
 -L heat_event
+-L heat_aabb
 -L ldtk-haxe-api
 -L deepnightLibs
 -L tink_core
