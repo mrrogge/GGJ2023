@@ -120,8 +120,8 @@
 			"maxCount": 0,
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
-			"pivotX": 0,
-			"pivotY": 0,
+			"pivotX": 0.5,
+			"pivotY": 0.5,
 			"fieldDefs": []
 		},
 		{
@@ -149,8 +149,8 @@
 			"maxCount": 0,
 			"limitScope": "PerLevel",
 			"limitBehavior": "MoveLastOne",
-			"pivotX": 0,
-			"pivotY": 0,
+			"pivotX": 0.5,
+			"pivotY": 0.5,
 			"fieldDefs": []
 		},
 		{
@@ -597,8 +597,8 @@
 						},
 						{
 							"__identifier": "Tree",
-							"__grid": [2,10],
-							"__pivot": [0,0],
+							"__grid": [4,12],
+							"__pivot": [0.5,0.5],
 							"__tags": [],
 							"__tile": { "tilesetUid": 7, "x": 48, "y": 288, "w": 16, "h": 16 },
 							"__smartColor": "#193C3E",
@@ -606,13 +606,13 @@
 							"width": 64,
 							"height": 64,
 							"defUid": 8,
-							"px": [32,160],
+							"px": [64,192],
 							"fieldInstances": []
 						},
 						{
 							"__identifier": "Ent",
-							"__grid": [3,3],
-							"__pivot": [0,0],
+							"__grid": [4,4],
+							"__pivot": [0.5,0.5],
 							"__tags": [],
 							"__tile": { "tilesetUid": 7, "x": 16, "y": 288, "w": 16, "h": 16 },
 							"__smartColor": "#193C3E",
@@ -620,7 +620,7 @@
 							"width": 16,
 							"height": 32,
 							"defUid": 6,
-							"px": [48,48],
+							"px": [64,64],
 							"fieldInstances": []
 						}
 					]
