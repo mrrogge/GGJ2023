@@ -27,8 +27,8 @@ class MoveSys {
             var dx = vel.x * dt + dvx/2 * dt * dt;
             var dy = vel.y * dt + dvy/2 *dt * dt;
             if (dx == 0 && dy == 0) continue;
-
-            switch Main.aabbWorld.move(id, new VectorFloat2(bitmap.x+dx, bitmap.y)) {
+            var colFilter = Main.colFilters.exists(id) ? Main.colFilters[id] : Main.aabbWorld.defaultFilter;
+            switch Main.aabbWorld.move(id, new VectorFloat2(bitmap.x+dx, bitmap.y), colFilter) {
                 case Success(result): {
                     bitmap.x = result.actualPos.x;
                     bitmap.y = result.actualPos.y;
@@ -37,7 +37,7 @@ class MoveSys {
                     bitmap.x += dx;
                 }
             }
-            switch Main.aabbWorld.move(id, new VectorFloat2(bitmap.x, bitmap.y+dy)) {
+            switch Main.aabbWorld.move(id, new VectorFloat2(bitmap.x, bitmap.y+dy), colFilter) {
                 case Success(result): {
                     bitmap.x = result.actualPos.x;
                     bitmap.y = result.actualPos.y;

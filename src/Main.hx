@@ -12,6 +12,7 @@ class Main extends hxd.App {
     public static final aabbWorld = new heat.aabb.World();
     public static final colFilters = new ComMap<heat.aabb.World.ColFilterFunc>();
     public static final walls = new ComMap<Bool>();
+    public static final buttons = new ComMap<Button>();
 
     public static var ent1Id:Int;
     public static var ent2Id:Int;
@@ -128,27 +129,52 @@ class Main extends hxd.App {
     }
 
     function loadButtons() {
-        var level0 = ldtkProject.all_levels.Level_0.l_Entities;
-        for (btn in level0.all_GreenBtn) {
-            var id = getId();
-            var bitmap = new h2d.Bitmap(tiles.greenButton[0]);
-            bitmaps[id] = bitmap;
-            bitmap.setPosition(btn.pixelX, btn.pixelY);
-            s2d.addChild(bitmap);
-        }
-        for (btn in level0.all_RedBtn) {
-            var id = getId();
-            var bitmap = new h2d.Bitmap(tiles.redButton[0]);
-            bitmaps[id] = bitmap;
-            bitmap.setPosition(btn.pixelX, btn.pixelY);
-            s2d.addChild(bitmap);
-        }
-        for (btn in level0.all_BlueBtn) {
-            var id = getId();
-            var bitmap = new h2d.Bitmap(tiles.blueButton[0]);
-            bitmaps[id] = bitmap;
-            bitmap.setPosition(btn.pixelX, btn.pixelY);
-            s2d.addChild(bitmap);
+        for (level in ldtkProject.levels) {
+            for (btn in level.l_Entities.all_GreenBtn) {
+                var id = getId();
+                var bitmap = new h2d.Bitmap(tiles.greenButton[0]);
+                bitmaps[id] = bitmap;
+                bitmap.setPosition(level.worldX+btn.pixelX, level.worldY+btn.pixelY);
+                s2d.addChild(bitmap);
+                var aabb = new heat.aabb.Rect(
+                    new VectorFloat2(level.worldX+btn.pixelX, level.worldY+btn.pixelY),
+                    new VectorFloat2(btn.width, btn.height)
+                );
+                aabbWorld.add(id, aabb);
+                var button = new Button(level.arrayIndex, GREEN);
+                buttons[id] = button;
+                colFilters[id] = noneColFilter;
+            }
+            for (btn in level.l_Entities.all_RedBtn) {
+                var id = getId();
+                var bitmap = new h2d.Bitmap(tiles.redButton[0]);
+                bitmaps[id] = bitmap;
+                bitmap.setPosition(level.worldX+btn.pixelX, level.worldY+btn.pixelY);
+                s2d.addChild(bitmap);
+                var aabb = new heat.aabb.Rect(
+                    new VectorFloat2(level.worldX+btn.pixelX, level.worldY+btn.pixelY),
+                    new VectorFloat2(btn.width, btn.height)
+                );
+                aabbWorld.add(id, aabb);
+                var button = new Button(level.arrayIndex, RED);
+                buttons[id] = button;
+                colFilters[id] = noneColFilter;
+            }
+            for (btn in level.l_Entities.all_BlueBtn) {
+                var id = getId();
+                var bitmap = new h2d.Bitmap(tiles.blueButton[0]);
+                bitmaps[id] = bitmap;
+                bitmap.setPosition(level.worldX+btn.pixelX, level.worldY+btn.pixelY);
+                s2d.addChild(bitmap);
+                var aabb = new heat.aabb.Rect(
+                    new VectorFloat2(level.worldX+btn.pixelX, level.worldY+btn.pixelY),
+                    new VectorFloat2(btn.width, btn.height)
+                );
+                aabbWorld.add(id, aabb);
+                var button = new Button(level.arrayIndex, BLUE);
+                buttons[id] = button;
+                colFilters[id] = noneColFilter;
+            }
         }
     }
 
@@ -169,6 +195,7 @@ class Main extends hxd.App {
             new VectorFloat2(ldtkEnt1.width*ldtkEnt1.pivotX, ldtkEnt1.height*ldtkEnt1.pivotY)
         );
         aabbWorld.add(ent1Id, aabb1);
+        colFilters[ent1Id] = entColFilter;
 
         ent2Id = getId();
         var ent2 = new Ent();
@@ -187,6 +214,7 @@ class Main extends hxd.App {
             new VectorFloat2(ldtkEnt2.width*ldtkEnt2.pivotX, ldtkEnt2.height*ldtkEnt2.pivotY)
         );
         aabbWorld.add(ent2Id, aabb2);
+        colFilters[ent2Id] = entColFilter;
     }
 
     override function loadAssets(onLoaded:() -> Void) {
@@ -307,6 +335,14 @@ class Main extends hxd.App {
     }
 
     public static function noneColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
+        return NONE;
+    }
+
+    public static function entColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
+        if (ents[item] == null) return NONE;
+        if (walls.exists(other)) return SLIDE;
+        if (buttons.exists(other)) return CROSS;
+        if (ents.exists(other)) return CROSS;
         return NONE;
     }
 }
