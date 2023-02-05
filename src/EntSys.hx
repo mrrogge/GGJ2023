@@ -28,8 +28,11 @@ class EntSys {
                 case ENT | TREE if (ent.switchFormRequest): {
                     switch tryToSwitchForms(ent, bitmap) {
                         case Success(_): {
+                            ent.switchFormRequestResult = Some(Success(Noise));
                         }
-                        case Failure(_): {}
+                        case Failure(err): {
+                            ent.switchFormRequestResult = Some(Failure(err));
+                        }
                     }
                     ent.switchFormRequest = false;
                 }

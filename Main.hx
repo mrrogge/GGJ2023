@@ -204,27 +204,41 @@ class Main extends hxd.App {
     function handleEntSwitch() {
         var ent1 = ents[ent1Id];
         ent1.switchFormRequest = true;
-        var ent2 = ents[ent2Id];
-        ent2.switchFormRequest = true;
         new Updater(updaters)
         .withOnUpdate((me:Updater, dt:Float)->{
-            trace("updater 1");
-            me.resolve();
+            var ent1 = ents[ent1Id];
+            switch ent1.switchFormRequestResult {
+                case Some(Success(_)): {  
+                    me.resolve();
+                }
+                case Some(Failure(_)): {
+                    me.reject();
+                }
+                case None: {}
+            }
         })
         .begin()
-        .next(new Updater.TimedUpdater(updaters, 1))
         .next(new Updater(updaters)
             .withOnUpdate((me:Updater, dt:Float)->{
-            trace("updater 2");
-            me.reject();
+                var ent = ents[ent2Id];
+                ent.switchFormRequest = true;
+                me.resolve();
             })
         )
         .next(new Updater(updaters)
             .withOnUpdate((me:Updater, dt:Float)->{
-            trace("updater 3");
-            me.reject();
+                var ent = ents[ent2Id];
+                switch ent.switchFormRequestResult {
+                    case Some(Success(_)): {
+                        me.resolve();
+                    }
+                    case Some(Failure(_)): {
+                        me.reject();
+                    }
+                    case None: {}
+                }
             })
-        );       
+        );    
     }
 
     public static function getId():Int {
