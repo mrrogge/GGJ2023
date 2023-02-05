@@ -9,6 +9,9 @@ class Main extends hxd.App {
     public static final prevVels = new ComMap<MVectorFloat2>();
     public static final bitmaps = new ComMap<h2d.Bitmap>();
     public static final ents = new ComMap<Ent>();
+    public static final aabbWorld = new heat.aabb.World();
+    public static final colFilters = new ComMap<heat.aabb.World.ColFilterFunc>();
+    public static final walls = new ComMap<Bool>();
 
     public static var ent1Id:Int;
     public static var ent2Id:Int;
@@ -80,9 +83,10 @@ class Main extends hxd.App {
 
     function loadLevels() {
         ldtkProject = new LdtkProject();
-        var level0 = ldtkProject.all_levels.Level_0.l_Floor.render();
-        level0.setPosition(ldtkProject.all_levels.Level_0.worldX, ldtkProject.all_levels.Level_0.worldY);
-        s2d.addChild(level0);
+        var level0 = ldtkProject.all_levels.Level_0;
+        var level0TG = level0.l_Floor.render();
+        level0TG.setPosition(level0.worldX, level0.worldY);
+        s2d.addChild(level0TG);
         var level1 = ldtkProject.all_levels.Level_1.l_Floor.render();
         level1.setPosition(ldtkProject.all_levels.Level_1.worldX, ldtkProject.all_levels.Level_1.worldY);
         s2d.addChild(level1);
@@ -98,6 +102,26 @@ class Main extends hxd.App {
         var level5 = ldtkProject.all_levels.Level_5.l_Floor.render();
         level5.setPosition(ldtkProject.all_levels.Level_5.worldX, ldtkProject.all_levels.Level_5.worldY);
         s2d.addChild(level5);
+
+        for (cy in 0...level0.l_Floor.cHei) {
+            for (cx in 0...level0.l_Floor.cWid) {
+                if (!level0.l_Floor.hasAnyTileAt(cx, cy)) continue;
+                var stack = level0.l_Floor.getTileStackAt(cx, cy);
+                for (tile in stack) {
+                    if (level0.l_Floor.tileset.hasTag(tile.tileId, Wall)) {
+                        var gridSize = level0.l_Floor.gridSize;
+                        var id = getId();
+                        var aabb = new heat.aabb.Rect(
+                            new VectorFloat2(level0.worldX+cx*gridSize, level0.worldY+cy*gridSize),
+                            new VectorFloat2(gridSize, gridSize)
+                        );
+                        aabbWorld.add(id, aabb);
+                        walls[id] = true;
+                        colFilters[id] = noneColFilter;
+                    }
+                }
+            }
+        }
 
         loadButtons();
         loadEnts();
@@ -139,7 +163,12 @@ class Main extends hxd.App {
         s2d.addChild(bitmap1);
         velocities[ent1Id] = new MVectorFloat2();
         prevVels[ent1Id] = new MVectorFloat2();
-        
+        var aabb1 = new heat.aabb.Rect(
+            new VectorFloat2(bitmap1.x, bitmap1.y),
+            new VectorFloat2(ldtkEnt1.width, ldtkEnt1.height),
+            new VectorFloat2(ldtkEnt1.width*ldtkEnt1.pivotX, ldtkEnt1.height*ldtkEnt1.pivotY)
+        );
+        aabbWorld.add(ent1Id, aabb1);
 
         ent2Id = getId();
         var ent2 = new Ent();
@@ -152,6 +181,12 @@ class Main extends hxd.App {
         s2d.addChild(bitmap2);
         velocities[ent2Id] = new MVectorFloat2();
         prevVels[ent2Id] = new MVectorFloat2();
+        var aabb2 = new heat.aabb.Rect(
+            new VectorFloat2(bitmap2.x, bitmap2.y),
+            new VectorFloat2(ldtkEnt2.width, ldtkEnt2.height),
+            new VectorFloat2(ldtkEnt2.width*ldtkEnt2.pivotX, ldtkEnt2.height*ldtkEnt2.pivotY)
+        );
+        aabbWorld.add(ent2Id, aabb2);
     }
 
     override function loadAssets(onLoaded:() -> Void) {
@@ -227,12 +262,14 @@ class Main extends hxd.App {
     }
 
     function handleEntSwitch() {
-        var ent1 = ents[ent1Id];
-        ent1.switchFormRequest = true;
+        var activeId = ent2Active ? ent2Id : ent1Id;
+        var inactiveId = ent2Active ? ent1Id : ent2Id;
+        var activeEnt = ents[activeId];
+        var inactiveEnt = ents[inactiveId];
+        activeEnt.switchFormRequest = true;
         new Updater(updaters)
         .withOnUpdate((me:Updater, dt:Float)->{
-            var ent1 = ents[ent1Id];
-            switch ent1.switchFormRequestResult {
+            switch activeEnt.switchFormRequestResult {
                 case Some(Success(_)): {  
                     me.resolve();
                 }
@@ -245,16 +282,14 @@ class Main extends hxd.App {
         .begin()
         .next(new Updater(updaters)
             .withOnUpdate((me:Updater, dt:Float)->{
-                var ent = ents[ent2Id];
-                ent.switchFormRequest = true;
+                inactiveEnt.switchFormRequest = true;
                 ent2Active = !ent2Active;
                 me.resolve();
             })
         )
         .next(new Updater(updaters)
             .withOnUpdate((me:Updater, dt:Float)->{
-                var ent = ents[ent2Id];
-                switch ent.switchFormRequestResult {
+                switch inactiveEnt.switchFormRequestResult {
                     case Some(Success(_)): {
                         me.resolve();
                     }
@@ -269,5 +304,9 @@ class Main extends hxd.App {
 
     public static function getId():Int {
         return nextId++;
+    }
+
+    public static function noneColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
+        return NONE;
     }
 }
