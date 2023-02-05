@@ -22,6 +22,7 @@ class Main extends hxd.App {
 
     var moveSys:MoveSys;
     var entSys:EntSys;
+    var updaters = new Updater.UpdaterGroup();
 
     static inline final FIXED_UPDATE_RATE = 30.;
     static inline final MAX_UPDATE_CALLS_PER_FRAME = 5;
@@ -60,6 +61,7 @@ class Main extends hxd.App {
     }
     
     function onUpdate(dt:Float) {
+        updaters.update(dt);
         moveSys.update(dt);
         entSys.update(dt);
     }
@@ -204,6 +206,25 @@ class Main extends hxd.App {
         ent1.switchFormRequest = true;
         var ent2 = ents[ent2Id];
         ent2.switchFormRequest = true;
+        new Updater(updaters)
+        .withOnUpdate((me:Updater, dt:Float)->{
+            trace("updater 1");
+            me.resolve();
+        })
+        .begin()
+        .next(new Updater.TimedUpdater(updaters, 1))
+        .next(new Updater(updaters)
+            .withOnUpdate((me:Updater, dt:Float)->{
+            trace("updater 2");
+            me.reject();
+            })
+        )
+        .next(new Updater(updaters)
+            .withOnUpdate((me:Updater, dt:Float)->{
+            trace("updater 3");
+            me.reject();
+            })
+        );       
     }
 
     public static function getId():Int {

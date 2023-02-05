@@ -1,82 +1,22 @@
 using tink.CoreApi;
 
-class Updater<T> {
-    public var promise(get, never):Promise<T>;
-    function get_promise():Promise<T> return promiseTrigger.asPromise();
-
-    public var resolved(default, null) = false;
-
-    var promiseTrigger:PromiseTrigger<T>;
-    var cblink:CallbackLink;
-
-    public static function staticIsNotResolved(updater:Updater<Any>):Bool {
-        return !updater.resolved;
-    }
-
-    public function new() {
-        promiseTrigger = Promise.trigger();
-        cblink = promiseTrigger.handle(nullHandler);
-    }
-
-    function nullHandler(outcome:Outcome<T, Error>) {}
-
-    // Triggers the promise. Call this from update() based on your custom logic.
-    public function trigger(outcome:Outcome<T, Error>) {
-        resolved = true;
-        promiseTrigger.trigger(outcome);
-    }
-
-    public function resolve(outcome:T) {
-        resolved = true;
-        promiseTrigger.resolve(outcome);
-    }
-
-    public function reject(error:Error) {
-        resolved = true;
-        promiseTrigger.reject(error);
-    }
-
-    // Called on every update(). Customize this to your needs.
-    public dynamic function onUpdate(dt:Float) {}
-
-    public function update(dt:Float) {
-        trace('updating $dt');
-        onUpdate(dt);
-    }
-}
-
-class TimedUpdater extends Updater<Float> {
-    public var acc(default, null) = 0.;
-    public var duration(default, null) = 0.;
-
-    override public function new(duration:Float) {
-        super();
-        this.duration = duration;
-    }
-
-    override function update(dt:Float) {
-        super.update(dt);
-        acc += dt;
-        if (acc >= duration) {
-            resolve(acc-duration);
-        }
-    }
-}
-
 class UpdaterGroup {
-    var updaters = new List<Updater<Any>>();
+    var updaters = new List<Updater>();
 
     public function new() {
 
     }
 
-    public function add(updater:Updater<Any>) {
+    public function add(updater:Updater) {
         updaters.add(updater);
     }
 
     public function update(dt:Float) {
         for (updater in updaters) {
-            if (!updater.resolved) updater.update(dt);
+            switch updater.state {
+                case AWAITING: updater.update(dt);
+                case INIT | RESOLVED | FAILED: {}
+            }
         }
         cleanupResolved();
     }
@@ -85,10 +25,87 @@ class UpdaterGroup {
     function cleanupResolved() {
         while (true) {
             if (updaters.isEmpty()) break;
-            if (updaters.first().resolved) {
-                updaters.pop();
+            switch updaters.first().state {
+                case RESOLVED | FAILED: {
+                    updaters.pop();
+                }
+                case INIT | AWAITING: break;
             }
-            else break;
+        }
+    }
+}
+
+class Updater {
+    public var state(default, null):UpdaterState = INIT;
+    var nextUpdater:Option<Updater> = None;
+
+    public function new(group:UpdaterGroup) {
+        group.add(this);
+    }
+
+    public function begin():Updater {
+        state = AWAITING;
+        return this;
+    }
+
+    public function update(dt:Float) {
+        onUpdate(this, dt);
+    }
+
+    public dynamic function onUpdate(me:Updater, dt:Float) {}
+
+    public function withOnUpdate(f:(me:Updater, dt:Float)->Void):Updater {
+        this.onUpdate = f;
+        return this;
+    }
+
+    public function resolve() {
+        state = RESOLVED;
+        switch nextUpdater {
+            case Some(nextUpdater): {
+                nextUpdater.state = AWAITING;
+            }
+            case None: {}
+        }
+    }
+
+    public function reject() {
+        state = FAILED;
+        switch nextUpdater {
+            case Some(nextUpdater): {
+                nextUpdater.reject();
+            }
+            case None: {}
+        }
+    }
+
+    public function next(nextUpdater:Updater):Updater {
+        this.nextUpdater = Some(nextUpdater);
+        return nextUpdater;
+    }
+}
+
+enum UpdaterState {
+    INIT;
+    AWAITING;
+    RESOLVED;
+    FAILED;
+}
+
+class TimedUpdater extends Updater {
+    public var acc(default, null) = 0.;
+    public var duration(default, null) = 0.;
+
+    override public function new(group:UpdaterGroup, duration:Float) {
+        super(group);
+        this.duration = duration;
+    }
+
+    override function update(dt:Float) {
+        super.update(dt);
+        acc += dt;
+        if (acc >= duration) {
+            resolve();
         }
     }
 }
