@@ -1,5 +1,6 @@
 import heat.ecs.ComMap;
 using heat.AllCore;
+using tink.CoreApi;
 class Main extends hxd.App {
     public static var ldtkProject:LdtkProject;
     public static var tiles:Tiles;
@@ -192,5 +193,9 @@ class Main extends hxd.App {
 
     public static function getId():Int {
         return nextId++;
+    }
+
+    function switchEnts():Outcome<Noise, Error> {
+
     }
 }
