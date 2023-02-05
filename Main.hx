@@ -7,6 +7,7 @@ class Main extends hxd.App {
     public static final velocities = new ComMap<MVectorFloat2>();
     public static final prevVels = new ComMap<MVectorFloat2>();
     public static final bitmaps = new ComMap<h2d.Bitmap>();
+    public static final ents = new ComMap<Ent>();
 
     public static var ent1Id:Int;
     public static var ent2Id:Int;
@@ -19,6 +20,7 @@ class Main extends hxd.App {
     public static inline final CAM_PX_HEIGHT = TILE_SIZE * 16;
 
     var moveSys:MoveSys;
+    var entSys:EntSys;
 
     public static function main() {
         new Main();
@@ -49,11 +51,13 @@ class Main extends hxd.App {
 
     function initSystems() {
         moveSys = new MoveSys();
+        entSys = new EntSys();
     }
 
     override function update(dt:Float) {
         super.update(dt);
         moveSys.update(dt);
+        entSys.update(dt);
     }
 
     function loadLevels() {
@@ -83,23 +87,27 @@ class Main extends hxd.App {
     function loadEnts() {
         ent1Id = getId();
         var ent1 = new Ent();
+        ents[ent1Id] = ent1;
+        var bitmap1 = new h2d.Bitmap();
+        bitmaps[ent1Id] = bitmap1;
         var ldtkEnt1 = ldtkProject.all_levels.Level_0.l_Entities.all_Ent[0];
-        ent1.setPosition(ldtkEnt1.pixelX, ldtkEnt1.pixelY);
-        s2d.addChild(ent1);
-        bitmaps[ent1Id] = ent1;
+        bitmap1.setPosition(ldtkEnt1.pixelX, ldtkEnt1.pixelY);
+        s2d.addChild(bitmap1);
         velocities[ent1Id] = new MVectorFloat2();
         prevVels[ent1Id] = new MVectorFloat2();
         
 
         ent2Id = getId();
         var ent2 = new Ent();
-        ent2.toTreeForm();
+        ents[ent2Id] = ent2;
+        ent2.switchFormRequest = true;
+        var bitmap2 = new h2d.Bitmap();
+        bitmaps[ent2Id] = bitmap2;
         var ldtkEnt2 = ldtkProject.all_levels.Level_0.l_Entities.all_Tree[0];
-        ent2.setPosition(ldtkEnt2.pixelX, ldtkEnt2.pixelY);
-        s2d.addChild(ent2);
+        bitmap2.setPosition(ldtkEnt2.pixelX, ldtkEnt2.pixelY);
+        s2d.addChild(bitmap2);
         velocities[ent2Id] = new MVectorFloat2();
         prevVels[ent2Id] = new MVectorFloat2();
-        bitmaps[ent2Id] = ent2;
     }
 
     override function loadAssets(onLoaded:() -> Void) {
@@ -116,7 +124,14 @@ class Main extends hxd.App {
         switch event.kind {
             case EKeyDown: {
                 if (!hxd.Key.ALLOW_KEY_REPEAT && hxd.Key.isDown(event.keyCode)) return;
-                makeActiveEntWalk(event.keyCode);
+                switch event.keyCode {
+                    case hxd.Key.A | hxd.Key.W | hxd.Key.D | hxd.Key.S: {
+                        makeActiveEntWalk(event.keyCode);
+                    }
+                    case hxd.Key.SPACE: {
+                        handleEntSwitch();
+                    }
+                }
             }
             case EKeyUp: {
                 stopActiveEntWalking(event.keyCode);
@@ -166,6 +181,13 @@ class Main extends hxd.App {
             }
             default: {}
         }
+    }
+
+    function handleEntSwitch() {
+        var ent1 = ents[ent1Id];
+        ent1.switchFormRequest = true;
+        var ent2 = ents[ent2Id];
+        ent2.switchFormRequest = true;
     }
 
     public static function getId():Int {
