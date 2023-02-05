@@ -12,6 +12,11 @@ class Ent {
     }
     public var switchFormRequestResult:Option<Outcome<Noise, Error>> = None;
 
+    public var moveLeftCmd = false;
+    public var moveRightCmd = false;
+    public var moveUpCmd = false;
+    public var moveDownCmd = false;
+
     public function new() {
         tile = Main.tiles.ent[0];
     }

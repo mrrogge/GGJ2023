@@ -140,62 +140,61 @@ class Main extends hxd.App {
 
     function keyEventHandler(event:hxd.Event) {
         switch event.kind {
+            case EKeyDown | EKeyUp: {
+                updateActiveEntWalkCmds(event);
+            }
+            default: {}
+        }
+        switch event.kind {
             case EKeyDown: {
-                if (!hxd.Key.ALLOW_KEY_REPEAT && hxd.Key.isDown(event.keyCode)) return;
                 switch event.keyCode {
-                    case hxd.Key.A | hxd.Key.W | hxd.Key.D | hxd.Key.S: {
-                        makeActiveEntWalk(event.keyCode);
-                    }
                     case hxd.Key.SPACE: {
                         handleEntSwitch();
                     }
                 }
             }
+            default: {}
+        }
+    }
+
+    function updateActiveEntWalkCmds(event:hxd.Event) {
+        var id = ent2Active ? ent2Id : ent1Id;
+        var ent = ents[id];
+        switch event.kind {
+            case EKeyDown: {
+                switch event.keyCode {
+                    case hxd.Key.A: {
+                        ent.moveLeftCmd = true;
+                    }
+                    case hxd.Key.W: {
+                        ent.moveUpCmd = true;
+                    }
+                    case hxd.Key.D: {
+                        ent.moveRightCmd = true;
+                    }
+                    case hxd.Key.S: {
+                        ent.moveDownCmd = true;
+                    }
+                    default: {}
+                }
+            }
             case EKeyUp: {
-                stopActiveEntWalking(event.keyCode);
-            }
-            default: {}
-        }
-    }
-
-    function makeActiveEntWalk(keyCode:Int) {
-        var id = ent2Active ? ent2Id : ent1Id;
-        var vel = velocities[id];
-        final SPEED = 100;
-        switch keyCode {
-            case hxd.Key.A: {
-                vel.x = -SPEED;
-            }
-            case hxd.Key.W: {
-                vel.y = -SPEED;
-            }
-            case hxd.Key.D: {
-                vel.x = SPEED;
-            }
-
-            case hxd.Key.S: {
-                vel.y = SPEED;
-            }
-            default: {}
-        }
-    }
-
-    function stopActiveEntWalking(keyCode:Int) {
-        var id = ent2Active ? ent2Id : ent1Id;
-        var vel = velocities[id];
-        switch keyCode {
-            case hxd.Key.A: {
-                vel.x = 0;
-            }
-            case hxd.Key.W: {
-                vel.y = 0;
-            }
-            case hxd.Key.D: {
-                vel.x = 0;
-            }
-
-            case hxd.Key.S: {
-                vel.y = 0;
+                switch event.keyCode {
+                    case hxd.Key.A: {
+                        ent.moveLeftCmd = false;
+                    }
+                    case hxd.Key.W: {
+                        ent.moveUpCmd = false;
+                    }
+                    case hxd.Key.D: {
+                        ent.moveRightCmd = false;
+                    }
+        
+                    case hxd.Key.S: {
+                        ent.moveDownCmd = false;
+                    }
+                    default: {}
+                }
             }
             default: {}
         }

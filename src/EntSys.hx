@@ -8,7 +8,7 @@ class EntSys {
     var query = new ComQuery();
 
     public function new() {
-        query.with(Main.ents).with(Main.bitmaps);
+        query.with(Main.ents).with(Main.velocities).with(Main.bitmaps);
     }
 
     public function update(dt:Float) {
@@ -16,6 +16,20 @@ class EntSys {
         for (id in query.result) {
             var ent = Main.ents[id];
             var bitmap = Main.bitmaps[id];
+            var vel = Main.velocities[id];
+            
+            vel.init(0,0);
+            switch ent.state {
+                case ENT: {
+                    if (ent.moveDownCmd) vel.y += 1;
+                    if (ent.moveUpCmd) vel.y -= 1;
+                    if (ent.moveLeftCmd) vel.x -= 1;
+                    if (ent.moveRightCmd) vel.x += 1;
+                    vel.normalize().multiplyBy(100);
+                }
+                case BECOMING_TREE | BECOMING_ENT | TREE: {}
+            }
+
             switch ent.state {
                 case BECOMING_TREE: {
                     ent.tile = Main.tiles.tree[0];
