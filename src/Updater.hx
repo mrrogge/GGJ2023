@@ -60,7 +60,6 @@ class Updater {
     }
 
     public function resolve() {
-        trace("resolve");
         state = RESOLVED;
         switch nextUpdater {
             case Some(nextUpdater): {
@@ -71,7 +70,6 @@ class Updater {
     }
 
     public function reject() {
-        trace("reject");
         state = FAILED;
         switch nextUpdater {
             case Some(nextUpdater): {
