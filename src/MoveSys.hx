@@ -32,6 +32,9 @@ class MoveSys {
                 case Success(result): {
                     bitmap.x = result.actualPos.x;
                     bitmap.y = result.actualPos.y;
+                    for (col in result.cols) {
+                        colSignalEmitter.emit(col);
+                    }
                 }
                 case Failure(err): {
                     bitmap.x += dx;
@@ -41,6 +44,9 @@ class MoveSys {
                 case Success(result): {
                     bitmap.x = result.actualPos.x;
                     bitmap.y = result.actualPos.y;
+                    for (col in result.cols) {
+                        colSignalEmitter.emit(col);
+                    }
                 }
                 case Failure(err): {
                     bitmap.y += dy;

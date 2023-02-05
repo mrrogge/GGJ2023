@@ -41,6 +41,7 @@ class Main extends hxd.App {
     var updaters = new Updater.UpdaterGroup();
     var buttonDoorLinkSys:ButtonDoorLinkSys;
     var cameraSys:CameraSys;
+    var boulderSys:BoulderSys;
 
     static inline final FIXED_UPDATE_RATE = 30.;
     static inline final MAX_UPDATE_CALLS_PER_FRAME = 5;
@@ -98,6 +99,8 @@ class Main extends hxd.App {
         doorSys = new DoorSys();
         buttonDoorLinkSys = new ButtonDoorLinkSys();
         cameraSys = new CameraSys();
+        boulderSys = new BoulderSys();
+        boulderSys.colSlot.connect(moveSys.colSignal);
     }
     
     function onUpdate(dt:Float) {
@@ -226,8 +229,9 @@ class Main extends hxd.App {
         ents[ent1Id] = ent1;
         var bitmap1 = new h2d.Bitmap();
         bitmaps[ent1Id] = bitmap1;
-        var ldtkEnt1 = ldtkProject.all_levels.Level_0.l_Entities.all_Ent[0];
-        bitmap1.setPosition(ldtkEnt1.pixelX, ldtkEnt1.pixelY);
+        var level = ldtkProject.all_levels.Level_1;
+        var ldtkEnt1 = level.l_Entities.all_Ent[0];
+        bitmap1.setPosition(level.worldX+ldtkEnt1.pixelX, level.worldY+ldtkEnt1.pixelY);
         s2d.addChild(bitmap1);
         velocities[ent1Id] = new MVectorFloat2();
         prevVels[ent1Id] = new MVectorFloat2();
@@ -470,6 +474,7 @@ class Main extends hxd.App {
     }
 
     public static function boulderColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
+        if (!boulders.exists(item)) return NONE;
         if (ents.exists(other)) return SLIDE;
         if (walls.exists(other)) return SLIDE;
         return NONE;
