@@ -119,6 +119,13 @@ class Main extends hxd.App {
             bitmap.setPosition(btn.pixelX, btn.pixelY);
             s2d.addChild(bitmap);
         }
+        for (btn in level0.all_BlueBtn) {
+            var id = getId();
+            var bitmap = new h2d.Bitmap(tiles.blueButton[0]);
+            bitmaps[id] = bitmap;
+            bitmap.setPosition(btn.pixelX, btn.pixelY);
+            s2d.addChild(bitmap);
+        }
     }
 
     function loadEnts() {
