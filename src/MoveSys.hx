@@ -22,9 +22,25 @@ class MoveSys {
             var dx = vel.x * dt + dvx/2 * dt * dt;
             var dy = vel.y * dt + dvy/2 *dt * dt;
             if (dx == 0 && dy == 0) continue;
-            bitmap.x += dx;
-            bitmap.y += dy;
 
+            switch Main.aabbWorld.move(id, new VectorFloat2(bitmap.x+dx, bitmap.y)) {
+                case Success(result): {
+                    bitmap.x = result.actualPos.x;
+                    bitmap.y = result.actualPos.y;
+                }
+                case Failure(err): {
+                    bitmap.x += dx;
+                }
+            }
+            switch Main.aabbWorld.move(id, new VectorFloat2(bitmap.x, bitmap.y+dy)) {
+                case Success(result): {
+                    bitmap.x = result.actualPos.x;
+                    bitmap.y = result.actualPos.y;
+                }
+                case Failure(err): {
+                    bitmap.y += dy;
+                }
+            }
             prevVel.initFrom(vel);
         }
     }
