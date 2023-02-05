@@ -14,10 +14,18 @@ class Main extends hxd.App {
     public static final walls = new ComMap<Bool>();
     public static final buttons = new ComMap<Button>();
     public static final doors = new ComMap<Door>();
+    public static final cameras = new ComMap<h2d.Camera>();
+    public static final camConfigs = new ComMap<CameraConfig>();
+    public static var worldCamera:h2d.Camera;
+    public static var worldCamConfig:CameraConfig;
 
     public static var ent1Id:Int;
     public static var ent2Id:Int;
     public static var ent2Active = false;
+    public static var activeEntId(get, never):Int;
+    static function get_activeEntId():Int {
+        return ent2Active ? ent2Id : ent1Id;
+    }
 
     static var nextId = 0;
 
@@ -31,6 +39,7 @@ class Main extends hxd.App {
     var doorSys:DoorSys;
     var updaters = new Updater.UpdaterGroup();
     var buttonDoorLinkSys:ButtonDoorLinkSys;
+    var cameraSys:CameraSys;
 
     static inline final FIXED_UPDATE_RATE = 30.;
     static inline final MAX_UPDATE_CALLS_PER_FRAME = 5;
@@ -43,6 +52,7 @@ class Main extends hxd.App {
     override function init() {
         super.init();
         initWindow();
+        initCameras();
         initTiles();
         initScene();
         initSystems();
@@ -52,6 +62,23 @@ class Main extends hxd.App {
     function initWindow() {
         hxd.Window.getInstance().resize(CAM_PX_WIDTH*3, CAM_PX_HEIGHT*3);
         hxd.Window.getInstance().addEventTarget(keyEventHandler);
+    }
+
+    function initCameras() {
+        worldCamera = s2d.camera;
+        worldCamera.setAnchor(0.5, 0.5);
+        worldCamera.setPosition(CAM_PX_WIDTH/2, CAM_PX_HEIGHT/2);
+        worldCamera.clipViewport = true;
+        worldCamera.layerVisible = layer -> {
+            return true;
+        }
+        var id = getId();
+        cameras[id] = worldCamera;
+        worldCamConfig = new CameraConfig();
+        worldCamConfig.lockX = CAM_PX_WIDTH/2;
+        worldCamConfig.lockY = CAM_PX_HEIGHT/2;
+        worldCamConfig.deadzone.init(new VectorFloat2(-16, -16), new VectorFloat2(32, 32));
+        camConfigs[id] = worldCamConfig;
     }
 
     function initTiles() {
@@ -69,6 +96,7 @@ class Main extends hxd.App {
         buttonSys = new ButtonSys();
         doorSys = new DoorSys();
         buttonDoorLinkSys = new ButtonDoorLinkSys();
+        cameraSys = new CameraSys();
     }
     
     function onUpdate(dt:Float) {
@@ -78,6 +106,7 @@ class Main extends hxd.App {
         buttonSys.update(dt);
         doorSys.update(dt);
         buttonDoorLinkSys.update(dt);
+        cameraSys.update(dt);
     }
 
     override function update(dt:Float) {
