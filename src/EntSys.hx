@@ -33,10 +33,12 @@ class EntSys {
             switch ent.state {
                 case BECOMING_TREE: {
                     ent.tile = Main.tiles.tree[0];
+                    updateAABB(id, 64, 64);
                     ent.state = TREE;
                 }
                 case BECOMING_ENT: {
                     ent.tile = Main.tiles.ent[0];
+                    updateAABB(id, 16, 32);
                     ent.state = ENT;
                 }
                 case ENT | TREE if (ent.switchFormRequest): {
@@ -84,6 +86,16 @@ class EntSys {
                 return Success(BECOMING_ENT);
             }
             case BECOMING_TREE | BECOMING_ENT: return Failure(new Error("already in-progress"));
+        }
+    }
+
+    function updateAABB(id:Int, width:Float, height:Float) {
+        switch Main.aabbWorld.getRect(id) {
+            case Success(aabb): {
+                Main.aabbWorld.update(id, aabb.pos, new VectorFloat2(width, height),
+                    new VectorFloat2(width/2, height/2));
+            }
+            case Failure(_): {}
         }
     }
 }
