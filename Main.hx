@@ -99,7 +99,26 @@ class Main extends hxd.App {
         level5.setPosition(ldtkProject.all_levels.Level_5.worldX, ldtkProject.all_levels.Level_5.worldY);
         s2d.addChild(level5);
 
+        loadButtons();
         loadEnts();
+    }
+
+    function loadButtons() {
+        var level0 = ldtkProject.all_levels.Level_0.l_Entities;
+        for (btn in level0.all_GreenBtn) {
+            var id = getId();
+            var bitmap = new h2d.Bitmap(tiles.greenButton[0]);
+            bitmaps[id] = bitmap;
+            bitmap.setPosition(btn.pixelX, btn.pixelY);
+            s2d.addChild(bitmap);
+        }
+        for (btn in level0.all_RedBtn) {
+            var id = getId();
+            var bitmap = new h2d.Bitmap(tiles.redButton[0]);
+            bitmaps[id] = bitmap;
+            bitmap.setPosition(btn.pixelX, btn.pixelY);
+            s2d.addChild(bitmap);
+        }
     }
 
     function loadEnts() {
