@@ -98,4 +98,8 @@ class EntSys {
             case Failure(_): {}
         }
     }
+
+    function onCollision(col:heat.aabb.World.Collision) {
+
+    }
 }

@@ -26,6 +26,7 @@ class Main extends hxd.App {
 
     var moveSys:MoveSys;
     var entSys:EntSys;
+    var buttonSys:ButtonSys;
     var updaters = new Updater.UpdaterGroup();
 
     static inline final FIXED_UPDATE_RATE = 30.;
@@ -62,12 +63,14 @@ class Main extends hxd.App {
     function initSystems() {
         moveSys = new MoveSys();
         entSys = new EntSys();
+        buttonSys = new ButtonSys();
     }
     
     function onUpdate(dt:Float) {
         updaters.update(dt);
         moveSys.update(dt);
         entSys.update(dt);
+        buttonSys.update(dt);
     }
 
     override function update(dt:Float) {
@@ -143,7 +146,7 @@ class Main extends hxd.App {
                 aabbWorld.add(id, aabb);
                 var button = new Button(level.arrayIndex, GREEN);
                 buttons[id] = button;
-                colFilters[id] = noneColFilter;
+                colFilters[id] = buttonColFilter;
             }
             for (btn in level.l_Entities.all_RedBtn) {
                 var id = getId();
@@ -158,7 +161,7 @@ class Main extends hxd.App {
                 aabbWorld.add(id, aabb);
                 var button = new Button(level.arrayIndex, RED);
                 buttons[id] = button;
-                colFilters[id] = noneColFilter;
+                colFilters[id] = buttonColFilter;
             }
             for (btn in level.l_Entities.all_BlueBtn) {
                 var id = getId();
@@ -173,7 +176,7 @@ class Main extends hxd.App {
                 aabbWorld.add(id, aabb);
                 var button = new Button(level.arrayIndex, BLUE);
                 buttons[id] = button;
-                colFilters[id] = noneColFilter;
+                colFilters[id] = buttonColFilter;
             }
         }
     }
@@ -339,9 +342,15 @@ class Main extends hxd.App {
     }
 
     public static function entColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
-        if (ents[item] == null) return NONE;
+        if (!ents.exists(item)) return NONE;
         if (walls.exists(other)) return SLIDE;
         if (buttons.exists(other)) return CROSS;
+        if (ents.exists(other)) return CROSS;
+        return NONE;
+    }
+
+    public static function buttonColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
+        if (!buttons.exists(item)) return NONE;
         if (ents.exists(other)) return CROSS;
         return NONE;
     }
