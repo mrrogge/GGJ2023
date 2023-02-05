@@ -30,6 +30,7 @@ class Main extends hxd.App {
     var buttonSys:ButtonSys;
     var doorSys:DoorSys;
     var updaters = new Updater.UpdaterGroup();
+    var buttonDoorLinkSys:ButtonDoorLinkSys;
 
     static inline final FIXED_UPDATE_RATE = 30.;
     static inline final MAX_UPDATE_CALLS_PER_FRAME = 5;
@@ -67,6 +68,7 @@ class Main extends hxd.App {
         entSys = new EntSys();
         buttonSys = new ButtonSys();
         doorSys = new DoorSys();
+        buttonDoorLinkSys = new ButtonDoorLinkSys();
     }
     
     function onUpdate(dt:Float) {
@@ -75,6 +77,7 @@ class Main extends hxd.App {
         entSys.update(dt);
         buttonSys.update(dt);
         doorSys.update(dt);
+        buttonDoorLinkSys.update(dt);
     }
 
     override function update(dt:Float) {
