@@ -18,6 +18,7 @@ class Main extends hxd.App {
     public static final camConfigs = new ComMap<CameraConfig>();
     public static var worldCamera:h2d.Camera;
     public static var worldCamConfig:CameraConfig;
+    public static final boulders = new ComMap<Boulder>();
 
     public static var ent1Id:Int;
     public static var ent2Id:Int;
@@ -165,6 +166,7 @@ class Main extends hxd.App {
 
         loadButtons();
         loadDoors();
+        loadBoulders();
         loadEnts();
     }
 
@@ -304,6 +306,26 @@ class Main extends hxd.App {
         }
     }
 
+    function loadBoulders() {
+        for (level in ldtkProject.levels) {
+            for (boulder in level.l_Entities.all_Boulder) {
+                var id = getId();
+                var bitmap = new h2d.Bitmap(tiles.boulder[0]);
+                bitmaps[id] = bitmap;
+                bitmap.setPosition(level.worldX+boulder.pixelX, level.worldY+boulder.pixelY);
+                s2d.addChild(bitmap);
+                var aabb = new heat.aabb.Rect(
+                    new VectorFloat2(level.worldX+boulder.pixelX, level.worldY+boulder.pixelY),
+                    new VectorFloat2(boulder.width, boulder.height)
+                );
+                aabbWorld.add(id, aabb);
+                colFilters[id] = boulderColFilter;
+                var obj = new Boulder();
+                boulders[id] = obj;
+            }
+        }
+    }
+
     override function loadAssets(onLoaded:() -> Void) {
         #if js
         hxd.Res.initEmbed();
@@ -437,12 +459,19 @@ class Main extends hxd.App {
                 case CLOSED: SLIDE;
             }
         }
+        if (boulders.exists(other)) return CROSS;
         return NONE;
     }
 
     public static function buttonColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
         if (!buttons.exists(item)) return NONE;
         if (ents.exists(other)) return CROSS;
+        return NONE;
+    }
+
+    public static function boulderColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
+        if (ents.exists(other)) return SLIDE;
+        if (walls.exists(other)) return SLIDE;
         return NONE;
     }
 }
