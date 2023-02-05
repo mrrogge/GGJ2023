@@ -23,6 +23,10 @@ class Main extends hxd.App {
     var moveSys:MoveSys;
     var entSys:EntSys;
 
+    static inline final FIXED_UPDATE_RATE = 30.;
+    static inline final MAX_UPDATE_CALLS_PER_FRAME = 5;
+    var updateAcc = 0.;
+
     public static function main() {
         new Main();
     }
@@ -54,11 +58,22 @@ class Main extends hxd.App {
         moveSys = new MoveSys();
         entSys = new EntSys();
     }
+    
+    function onUpdate(dt:Float) {
+        moveSys.update(dt);
+        entSys.update(dt);
+    }
 
     override function update(dt:Float) {
         super.update(dt);
-        moveSys.update(dt);
-        entSys.update(dt);
+        updateAcc += dt;
+        if (updateAcc > MAX_UPDATE_CALLS_PER_FRAME/FIXED_UPDATE_RATE) {
+            updateAcc = MAX_UPDATE_CALLS_PER_FRAME/FIXED_UPDATE_RATE;
+        }
+        while (updateAcc >= 1/FIXED_UPDATE_RATE) {
+            onUpdate(1/FIXED_UPDATE_RATE);
+            updateAcc -= 1/FIXED_UPDATE_RATE;
+        }
     }
 
     function loadLevels() {
@@ -193,9 +208,5 @@ class Main extends hxd.App {
 
     public static function getId():Int {
         return nextId++;
-    }
-
-    function switchEnts():Outcome<Noise, Error> {
-
     }
 }
