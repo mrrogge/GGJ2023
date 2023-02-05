@@ -152,7 +152,7 @@ class Main extends hxd.App {
                     new VectorFloat2(btn.width, btn.height)
                 );
                 aabbWorld.add(id, aabb);
-                var button = new Button(level.arrayIndex, GREEN);
+                var button = new Button(level.arrayIndex, GREEN, btn.f_inverted);
                 buttons[id] = button;
                 colFilters[id] = buttonColFilter;
             }
@@ -167,7 +167,7 @@ class Main extends hxd.App {
                     new VectorFloat2(btn.width, btn.height)
                 );
                 aabbWorld.add(id, aabb);
-                var button = new Button(level.arrayIndex, RED);
+                var button = new Button(level.arrayIndex, RED, btn.f_inverted);
                 buttons[id] = button;
                 colFilters[id] = buttonColFilter;
             }
@@ -182,7 +182,7 @@ class Main extends hxd.App {
                     new VectorFloat2(btn.width, btn.height)
                 );
                 aabbWorld.add(id, aabb);
-                var button = new Button(level.arrayIndex, BLUE);
+                var button = new Button(level.arrayIndex, BLUE, btn.f_inverted);
                 buttons[id] = button;
                 colFilters[id] = buttonColFilter;
             }

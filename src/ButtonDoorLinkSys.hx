@@ -21,8 +21,8 @@ class ButtonDoorLinkSys {
                 var door = Main.doors[id];
                 if (door.level != btn.level || door.color != btn.color) continue;
                 door.state = switch btn.state {
-                    case PRESSED: OPEN;
-                    case UNPRESSED: CLOSED;
+                    case PRESSED: btn.inverted ? CLOSED : OPEN;
+                    case UNPRESSED: btn.inverted ? OPEN : CLOSED;
                 }
                 break;
             }
