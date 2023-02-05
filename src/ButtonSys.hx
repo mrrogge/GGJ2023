@@ -20,7 +20,7 @@ class ButtonSys {
             switch Main.aabbWorld.check(id, new VectorFloat2(bitmap.x, bitmap.y), Main.colFilters[id]) {
                 case Success(result): {
                     for (col in result.cols) {
-                        if (Main.ents.exists(col.otherId)) {
+                        if (Main.ents.exists(col.otherId) || Main.boulders.exists(col.otherId)) {
                             button.state = PRESSED;
                             break;
                         }

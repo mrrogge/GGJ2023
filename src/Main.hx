@@ -127,44 +127,33 @@ class Main extends hxd.App {
 
     function loadLevels() {
         ldtkProject = new LdtkProject();
-        var level0 = ldtkProject.all_levels.Level_0;
-        var level0TG = level0.l_Floor.render();
-        level0TG.setPosition(level0.worldX, level0.worldY);
-        s2d.addChild(level0TG);
-        var level1 = ldtkProject.all_levels.Level_1.l_Floor.render();
-        level1.setPosition(ldtkProject.all_levels.Level_1.worldX, ldtkProject.all_levels.Level_1.worldY);
-        s2d.addChild(level1);
-        var level2 = ldtkProject.all_levels.Level_2.l_Floor.render();
-        level2.setPosition(ldtkProject.all_levels.Level_2.worldX, ldtkProject.all_levels.Level_2.worldY);
-        s2d.addChild(level2);
-        var level3 = ldtkProject.all_levels.Level_3.l_Floor.render();
-        level3.setPosition(ldtkProject.all_levels.Level_3.worldX, ldtkProject.all_levels.Level_3.worldY);
-        s2d.addChild(level3);
-        var level4 = ldtkProject.all_levels.Level_4.l_Floor.render();
-        level4.setPosition(ldtkProject.all_levels.Level_4.worldX, ldtkProject.all_levels.Level_4.worldY);
-        s2d.addChild(level4);
-        var level5 = ldtkProject.all_levels.Level_5.l_Floor.render();
-        level5.setPosition(ldtkProject.all_levels.Level_5.worldX, ldtkProject.all_levels.Level_5.worldY);
-        s2d.addChild(level5);
+        for (level in ldtkProject.levels) {
+            var tileGroup = level.l_Floor.render();
+            tileGroup.setPosition(level.worldX, level.worldY);
+            s2d.addChild(tileGroup);
 
-        for (cy in 0...level0.l_Floor.cHei) {
-            for (cx in 0...level0.l_Floor.cWid) {
-                if (!level0.l_Floor.hasAnyTileAt(cx, cy)) continue;
-                var stack = level0.l_Floor.getTileStackAt(cx, cy);
-                for (tile in stack) {
-                    if (level0.l_Floor.tileset.hasTag(tile.tileId, Wall)) {
-                        var gridSize = level0.l_Floor.gridSize;
-                        var id = getId();
-                        var aabb = new heat.aabb.Rect(
-                            new VectorFloat2(level0.worldX+cx*gridSize, level0.worldY+cy*gridSize),
-                            new VectorFloat2(gridSize, gridSize)
-                        );
-                        aabbWorld.add(id, aabb);
-                        walls[id] = true;
-                        colFilters[id] = noneColFilter;
+            for (cy in 0...level.l_Floor.cHei) {
+                for (cx in 0...level.l_Floor.cWid) {
+                    if (!level.l_Floor.hasAnyTileAt(cx, cy)) continue;
+                    var stack = level.l_Floor.getTileStackAt(cx, cy);
+                    for (tile in stack) {
+                        if (level.l_Floor.tileset.hasTag(tile.tileId, Wall)) {
+                            var gridSize = level.l_Floor.gridSize;
+                            var id = getId();
+                            var aabb = new heat.aabb.Rect(
+                                new VectorFloat2(level.worldX+cx*gridSize, level.worldY+cy*gridSize),
+                                new VectorFloat2(gridSize, gridSize)
+                            );
+                            aabbWorld.add(id, aabb);
+                            walls[id] = true;
+                            colFilters[id] = noneColFilter;
+                        }
                     }
                 }
-            }
+
+        }
+
+
         }
 
         loadButtons();
@@ -229,7 +218,7 @@ class Main extends hxd.App {
         ents[ent1Id] = ent1;
         var bitmap1 = new h2d.Bitmap();
         bitmaps[ent1Id] = bitmap1;
-        var level = ldtkProject.all_levels.Level_1;
+        var level = ldtkProject.all_levels.Level_0;
         var ldtkEnt1 = level.l_Entities.all_Ent[0];
         bitmap1.setPosition(level.worldX+ldtkEnt1.pixelX, level.worldY+ldtkEnt1.pixelY);
         s2d.addChild(bitmap1);
@@ -470,6 +459,7 @@ class Main extends hxd.App {
     public static function buttonColFilter(item:Int, other:Int):heat.aabb.World.CollisionKind {
         if (!buttons.exists(item)) return NONE;
         if (ents.exists(other)) return CROSS;
+        if (boulders.exists(other)) return CROSS;
         return NONE;
     }
 
