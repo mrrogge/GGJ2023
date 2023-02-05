@@ -4,6 +4,9 @@ class Tiles {
     public final greenButton:Array<h2d.Tile>;
     public final redButton:Array<h2d.Tile>;
     public final blueButton:Array<h2d.Tile>;
+    public final greenDoor:Array<h2d.Tile>;
+    public final redDoor:Array<h2d.Tile>;
+    public final blueDoor:Array<h2d.Tile>;
 
     public function new() {
         ent = makeTileArrayFromFixedSize(hxd.Res.img.ent1_png, 0, 0, 20, 36, 1, 10, 18);
@@ -11,6 +14,9 @@ class Tiles {
         greenButton = makeTileArrayFromFixedSize(hxd.Res.img.greenButton_png, 0, 0, 32, 32, 2, 0, 0);
         redButton = makeTileArrayFromFixedSize(hxd.Res.img.redButton_png, 0, 0, 32, 32, 2, 0, 0);
         blueButton = makeTileArrayFromFixedSize(hxd.Res.img.blueButton_png, 0, 0, 32, 32, 2, 0, 0);
+        greenDoor = makeTileArrayFromFixedSize(hxd.Res.img.greenDoor_png, 0, 0, 16, 64, 1, 0, 0);
+        redDoor = makeTileArrayFromFixedSize(hxd.Res.img.redDoor_png, 0, 0, 16, 64, 1, 0, 0);
+        blueDoor = makeTileArrayFromFixedSize(hxd.Res.img.blueDoor_png, 0, 0, 64, 16, 1, 0, 0);
     }
 
     function makeTileArrayFromFixedSize(res:hxd.res.Image, x:Int, y:Int, w:Int, 

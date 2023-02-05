@@ -13,6 +13,7 @@ class Main extends hxd.App {
     public static final colFilters = new ComMap<heat.aabb.World.ColFilterFunc>();
     public static final walls = new ComMap<Bool>();
     public static final buttons = new ComMap<Button>();
+    public static final doors = new ComMap<Door>();
 
     public static var ent1Id:Int;
     public static var ent2Id:Int;
@@ -27,6 +28,7 @@ class Main extends hxd.App {
     var moveSys:MoveSys;
     var entSys:EntSys;
     var buttonSys:ButtonSys;
+    var doorSys:DoorSys;
     var updaters = new Updater.UpdaterGroup();
 
     static inline final FIXED_UPDATE_RATE = 30.;
@@ -64,6 +66,7 @@ class Main extends hxd.App {
         moveSys = new MoveSys();
         entSys = new EntSys();
         buttonSys = new ButtonSys();
+        doorSys = new DoorSys();
     }
     
     function onUpdate(dt:Float) {
@@ -71,6 +74,7 @@ class Main extends hxd.App {
         moveSys.update(dt);
         entSys.update(dt);
         buttonSys.update(dt);
+        doorSys.update(dt);
     }
 
     override function update(dt:Float) {
@@ -128,6 +132,7 @@ class Main extends hxd.App {
         }
 
         loadButtons();
+        loadDoors();
         loadEnts();
     }
 
@@ -218,6 +223,53 @@ class Main extends hxd.App {
         );
         aabbWorld.add(ent2Id, aabb2);
         colFilters[ent2Id] = entColFilter;
+    }
+
+    function loadDoors() {
+        for (level in ldtkProject.levels) {
+            for (door in level.l_Entities.all_GreenDoor) {
+                var id = getId();
+                var bitmap = new h2d.Bitmap(tiles.greenDoor[0]);
+                bitmaps[id] = bitmap;
+                bitmap.setPosition(level.worldX+door.pixelX, level.worldY+door.pixelY);
+                s2d.addChild(bitmap);
+                var aabb = new heat.aabb.Rect(
+                    new VectorFloat2(level.worldX+door.pixelX, level.worldY+door.pixelY),
+                    new VectorFloat2(door.width, door.height)
+                );
+                aabbWorld.add(id, aabb);
+                var obj = new Door(level.arrayIndex, GREEN);
+                doors[id] = obj;
+            }
+            for (door in level.l_Entities.all_RedDoor) {
+                var id = getId();
+                var bitmap = new h2d.Bitmap(tiles.redDoor[0]);
+                bitmaps[id] = bitmap;
+                bitmap.setPosition(level.worldX+door.pixelX, level.worldY+door.pixelY);
+                s2d.addChild(bitmap);
+                var aabb = new heat.aabb.Rect(
+                    new VectorFloat2(level.worldX+door.pixelX, level.worldY+door.pixelY),
+                    new VectorFloat2(door.width, door.height)
+                );
+                aabbWorld.add(id, aabb);
+                var obj = new Door(level.arrayIndex, RED);
+                doors[id] = obj;
+            }
+            for (door in level.l_Entities.all_BlueDoor) {
+                var id = getId();
+                var bitmap = new h2d.Bitmap(tiles.blueDoor[0]);
+                bitmaps[id] = bitmap;
+                bitmap.setPosition(level.worldX+door.pixelX, level.worldY+door.pixelY);
+                s2d.addChild(bitmap);
+                var aabb = new heat.aabb.Rect(
+                    new VectorFloat2(level.worldX+door.pixelX, level.worldY+door.pixelY),
+                    new VectorFloat2(door.width, door.height)
+                );
+                aabbWorld.add(id, aabb);
+                var obj = new Door(level.arrayIndex, BLUE);
+                doors[id] = obj;
+            }
+        }
     }
 
     override function loadAssets(onLoaded:() -> Void) {
@@ -346,6 +398,13 @@ class Main extends hxd.App {
         if (walls.exists(other)) return SLIDE;
         if (buttons.exists(other)) return CROSS;
         if (ents.exists(other)) return CROSS;
+        if (doors.exists(other)) {
+            var door = doors[other];
+            return switch door.state {
+                case OPEN: NONE;
+                case CLOSED: SLIDE;
+            }
+        }
         return NONE;
     }
 

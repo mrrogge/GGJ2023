@@ -5,15 +5,15 @@ using tink.CoreApi;
 
 @:access(Main)
 class ButtonSys {
-    var query = new ComQuery();
+    var btnQuery = new ComQuery();
 
     public function new() {
-        query.with(Main.buttons).with(Main.bitmaps);
+        btnQuery.with(Main.buttons).with(Main.bitmaps);
     }
 
     public function update(dt:Float) {
-        query.run();
-        for (id in query.result) {
+        btnQuery.run();
+        for (id in btnQuery.result) {
             var button = Main.buttons[id];
             var bitmap = Main.bitmaps[id];
             button.state = UNPRESSED;
