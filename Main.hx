@@ -222,6 +222,7 @@ class Main extends hxd.App {
             .withOnUpdate((me:Updater, dt:Float)->{
                 var ent = ents[ent2Id];
                 ent.switchFormRequest = true;
+                ent2Active = !ent2Active;
                 me.resolve();
             })
         )
