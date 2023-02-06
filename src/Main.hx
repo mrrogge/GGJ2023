@@ -357,12 +357,7 @@ class Main extends hxd.App {
     }
 
     override function loadAssets(onLoaded:() -> Void) {
-        #if js
         hxd.Res.initEmbed();
-        #else
-        hxd.res.Resource.LIVE_UPDATE = true;
-        hxd.Res.initLocal();
-        #end
         super.loadAssets(onLoaded);
     }
 
