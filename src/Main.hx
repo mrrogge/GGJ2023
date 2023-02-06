@@ -343,10 +343,10 @@ class Main extends hxd.App {
         noEnemiesText.text = "I didn't have time to make enemies :/";
         noEnemiesText.maxWidth = TILE_SIZE * 12;
 
-        var noBossText = new h2d.Text(titleFont, s2d);
+        var noBossText = new h2d.Text(smallFont, s2d);
         level = ldtkProject.all_levels.Level_4;
         noBossText.setPosition(level.worldX+TILE_SIZE*2, level.worldY+TILE_SIZE*1);
-        noBossText.text = "No boss - lucky you";
+        noBossText.text = "The boss has decided he had better things to do today.\n\nWow what a memorable moment this is!";
         noBossText.maxWidth = TILE_SIZE * 14;
 
         var theEndText = new h2d.Text(smallFont, s2d);
