@@ -150,11 +150,10 @@ class Main extends hxd.App {
                         }
                     }
                 }
-
+            }
         }
 
-
-        }
+        loadText();
 
         loadButtons();
         loadDoors();
@@ -218,7 +217,7 @@ class Main extends hxd.App {
         ents[ent1Id] = ent1;
         var bitmap1 = new h2d.Bitmap();
         bitmaps[ent1Id] = bitmap1;
-        var level = ldtkProject.all_levels.Level_0;
+        var level = ldtkProject.all_levels.Title;
         var ldtkEnt1 = level.l_Entities.all_Ent[0];
         bitmap1.setPosition(level.worldX+ldtkEnt1.pixelX, level.worldY+ldtkEnt1.pixelY);
         s2d.addChild(bitmap1);
@@ -317,6 +316,44 @@ class Main extends hxd.App {
                 boulders[id] = obj;
             }
         }
+    }
+
+    function loadText() {
+        var titleFont = makeDefaultFont(24);
+        var titleText = new h2d.Text(titleFont, s2d);
+        var level = ldtkProject.all_levels.Title;
+        titleText.setPosition(level.worldX+TILE_SIZE*2, level.worldY+TILE_SIZE*1);
+        titleText.text = "Are You Not ENTertained?";
+        titleText.maxWidth = TILE_SIZE * 14;
+        // titleText.textAlign = Center;
+
+        var smallFont = makeDefaultFont(12);
+        var creditText = new h2d.Text(smallFont, s2d);
+        creditText.setPosition(level.worldX+TILE_SIZE*2, level.worldY+TILE_SIZE*5);
+        creditText.text = "A game by Matt Rogge";
+
+        var instText = new h2d.Text(smallFont, s2d);
+        instText.setPosition(level.worldX+TILE_SIZE*2, level.worldY+TILE_SIZE*6);
+        instText.maxWidth = TILE_SIZE * 14;
+        instText.text = "Move with WASD; Press SPACE to swap while over grass";
+
+        var noEnemiesText = new h2d.Text(smallFont, s2d);
+        level = ldtkProject.all_levels.Level_2;
+        noEnemiesText.setPosition(level.worldX+TILE_SIZE*2, level.worldY+TILE_SIZE*1);
+        noEnemiesText.text = "I didn't have time to make enemies :/";
+        noEnemiesText.maxWidth = TILE_SIZE * 12;
+
+        var noBossText = new h2d.Text(titleFont, s2d);
+        level = ldtkProject.all_levels.Level_4;
+        noBossText.setPosition(level.worldX+TILE_SIZE*2, level.worldY+TILE_SIZE*1);
+        noBossText.text = "No boss - lucky you";
+        noBossText.maxWidth = TILE_SIZE * 14;
+
+        var theEndText = new h2d.Text(smallFont, s2d);
+        level = ldtkProject.all_levels.Level_5;
+        theEndText.setPosition(level.worldX+TILE_SIZE*2, level.worldY+TILE_SIZE*1);
+        theEndText.text = "And so, Leaf Erikson and Bark Walberg spent the rest of their days in a beautiful, lush forest, where they lived happily ever after.\n\nThank you for playing my \"game\".";
+        theEndText.maxWidth = TILE_SIZE * 14;
     }
 
     override function loadAssets(onLoaded:() -> Void) {
@@ -468,5 +505,11 @@ class Main extends hxd.App {
         if (ents.exists(other)) return SLIDE;
         if (walls.exists(other)) return SLIDE;
         return NONE;
+    }
+
+    function makeDefaultFont(size:Int):h2d.Font {
+        var font = hxd.res.DefaultFont.get().clone();
+        font.resizeTo(size);
+        return font;
     }
 }
