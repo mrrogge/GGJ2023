@@ -41,7 +41,6 @@ class Main extends hxd.App {
     var updaters = new Updater.UpdaterGroup();
     var buttonDoorLinkSys:ButtonDoorLinkSys;
     var cameraSys:CameraSys;
-    var boulderSys:BoulderSys;
 
     static inline final FIXED_UPDATE_RATE = 30.;
     static inline final MAX_UPDATE_CALLS_PER_FRAME = 5;
@@ -99,8 +98,7 @@ class Main extends hxd.App {
         doorSys = new DoorSys();
         buttonDoorLinkSys = new ButtonDoorLinkSys();
         cameraSys = new CameraSys();
-        boulderSys = new BoulderSys();
-        boulderSys.colSlot.connect(moveSys.colSignal);
+        entSys.colSlot.connect(moveSys.colSignal);
     }
     
     function onUpdate(dt:Float) {
@@ -484,7 +482,7 @@ class Main extends hxd.App {
                 case CLOSED: SLIDE;
             }
         }
-        if (boulders.exists(other)) return CROSS;
+        if (boulders.exists(other)) return SLIDE;
         return NONE;
     }
 

@@ -6,9 +6,11 @@ using tink.CoreApi;
 @:access(Main)
 class EntSys {
     var query = new ComQuery();
+    public final colSlot:heat.event.Slot<heat.aabb.World.Collision>;
 
     public function new() {
         query.with(Main.ents).with(Main.velocities).with(Main.bitmaps);
+        colSlot = new heat.event.Slot(onCollision);
     }
 
     public function update(dt:Float) {
@@ -100,6 +102,18 @@ class EntSys {
     }
 
     function onCollision(col:heat.aabb.World.Collision) {
-
+        if (!Main.ents.exists(col.movingId)) return;
+        if (!Main.boulders.exists(col.otherId)) return;
+        var bitmap = Main.bitmaps[col.otherId];
+        var goal = new VectorFloat2(bitmap.x, bitmap.y) - col.normal.toVectorFloat2();
+        var moveResult = Main.aabbWorld.move(col.otherId, goal, 
+            Main.colFilters[col.otherId]);
+        switch moveResult {
+            case Success(result): {
+                bitmap.x = result.actualPos.x;
+                bitmap.y = result.actualPos.y;
+            }
+            case Failure(_): {}
+        }
     }
 }
